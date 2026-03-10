@@ -116,4 +116,3 @@ The LangGraph agent uses a custom graph with two nodes connected by conditional 
 ![List Users](Images/list%20user.png)
 
 ---
-

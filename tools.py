@@ -12,15 +12,17 @@ def create_user(
     age: int = None,
     profession: str = None,
 ) -> str:
-    """Create a new user in the database. Required fields are name and email."""
+    """Create a new user. Required: name and email."""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
+        # Check if a user with the same email already exists
         cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
         if cursor.fetchone():
             return f"A user with email {email} already exists."
 
+        # Insert new user into the database
         cursor.execute(
             """
             INSERT INTO users (name, email, phone_number, location, age, profession)
@@ -29,7 +31,6 @@ def create_user(
             """,
             (name, email, phone_number, location, age, profession),
         )
-
         user = dict(cursor.fetchone())
         conn.commit()
         return f"User created successfully. Details: {user}"
@@ -45,7 +46,7 @@ def create_user(
 
 @tool
 def get_user(user_id: str = None, email: str = None) -> str:
-    """Get a user by their ID or email address. Provide at least one of user_id or email."""
+    """Fetch a user by user_id or email. Must provide at least one."""
     if user_id in (None, "null", ""):
         user_id = None
     if email in (None, "null", ""):
@@ -63,7 +64,6 @@ def get_user(user_id: str = None, email: str = None) -> str:
             cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
 
         user = cursor.fetchone()
-
         if not user:
             return "No user found."
 
@@ -79,7 +79,7 @@ def get_user(user_id: str = None, email: str = None) -> str:
 
 @tool
 def list_users(location: str = None, profession: str = None) -> str:
-    """List all users. Optionally filter by location or profession."""
+    """List all users, optionally filtering by location or profession."""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -90,14 +90,12 @@ def list_users(location: str = None, profession: str = None) -> str:
         if location:
             query += " AND location ILIKE %s"
             params.append(f"%{location}%")
-
         if profession:
             query += " AND profession ILIKE %s"
             params.append(f"%{profession}%")
 
         cursor.execute(query, params)
         users = cursor.fetchall()
-
         if not users:
             return "No users found."
 
@@ -121,15 +119,17 @@ def update_user(
     age: int = None,
     profession: str = None,
 ) -> str:
-    """Update an existing user by their user_id. Only pass the fields you want to change."""
+    """Update an existing user. Only provide fields to change."""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
+        # Ensure user exists
         cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
         if not cursor.fetchone():
             return f"No user found with ID {user_id}."
 
+        # Build dynamic update query
         fields = []
         values = []
 
@@ -175,14 +175,13 @@ def update_user(
 
 @tool
 def delete_user(user_id: str) -> str:
-    """Delete a user from the database by their user_id."""
+    """Delete a user by their user_id."""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         cursor.execute("SELECT id, name, email FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
-
         if not user:
             return f"No user found with ID {user_id}."
 

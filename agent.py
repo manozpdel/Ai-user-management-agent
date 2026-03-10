@@ -38,21 +38,24 @@ Optional fields:
 Rules you must follow:
 1. When a user asks to create a new user, collect all required details step by step. Required fields are: name, email, phone_number, location.
 2. Age and profession are optional fields. After collecting all required fields, ask the user: "Age and profession are optional fields. Would you like to add them, or should I proceed with creating the user?"
-3. If the user provides age or profession, include them when calling the create_user tool. If the user does not want to provide them, proceed with creating the user without those fields.
-4. Before deleting a user, always ask for confirmation first.
-5. When retrieving a user, accept either user_id or email.
-6. Be conversational, clear, and helpful in your responses.
-7. If something goes wrong, explain the issue in simple terms.
+3. If the user provides age or profession, include them when calling the create_user tool.
+4. If the user does not want to provide them, proceed without them.
+5. Before deleting a user, always ask for confirmation.
+6. When retrieving a user, accept either user_id or email.
+7. Be conversational and helpful.
 """
 
+# Initialize LLM
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
     api_key=os.getenv("GROQ_API_KEY"),
 )
 
+# Bind tools to the model
 llm_with_tools = llm.bind_tools(TOOLS)
 
 
+# Handle the main LLM response
 def agent_node(state: MessagesState):
     messages = [SystemMessage(content=SYSTEM_PROMPT)] + state["messages"]
     response = llm_with_tools.invoke(messages)
@@ -62,6 +65,7 @@ def agent_node(state: MessagesState):
 tool_node = ToolNode(TOOLS)
 
 
+# Build and configure the agent graph
 def create_agent():
     graph = StateGraph(MessagesState)
 
@@ -73,7 +77,6 @@ def create_agent():
     graph.add_conditional_edges("agent", tools_condition)
     graph.add_edge("tools", "agent")
 
-    # Open a persistent connection that stays alive for the app lifetime
     conn = psycopg.connect(os.getenv("DATABASE_URL"), autocommit=True)
     checkpointer = PostgresSaver(conn)
     checkpointer.setup()
@@ -85,6 +88,7 @@ def create_agent():
 agent = create_agent()
 
 
+# Send user message to the agent and return response
 def chat(message: str, thread_id: str) -> str:
     config = {"configurable": {"thread_id": thread_id}}
 
