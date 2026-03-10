@@ -48,7 +48,7 @@ An AI-powered user management system built with LangGraph, FastAPI, PostgreSQL, 
 
 ```bash
 git clone https://github.com/manozpdel/Ai-user-management-agent.git
-cd your-repo-name
+cd Ai-user-management-agent
 ```
 
 ### 2. Set up environment variables
