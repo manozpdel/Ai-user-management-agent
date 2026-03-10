@@ -110,7 +110,7 @@ The LangGraph agent uses a custom graph with two nodes connected by conditional 
 ![Updated](Images/update.png)
 
 ### Delete confirmation
-![Delete Confirmation](Images/delete%20user.png.png)
+![Delete Confirmation](Images/delete%20user.png)
 
 ### Listing all users
 ![List Users](Images/list_users.png)
