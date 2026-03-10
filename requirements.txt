@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+psycopg2-binary
+psycopg[binary]
+psycopg[pool]
+langchain-core
+langchain-groq
+langgraph
+langgraph-checkpoint-postgres
+python-dotenv
+pydantic
+streamlit
+requests
