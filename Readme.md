@@ -102,15 +102,23 @@ The LangGraph agent uses a custom graph with two nodes connected by conditional 
 ### Our UI with Conversation Memory
 ![UI](Images/UI.png)
 
+---
+
 
 ### Agent collecting user details step by step
 ![Add User](Images/Add%20user.png)
 
+---
+
 ### Updated User details
 ![Updated](Images/update.png)
 
+---
+
 ### Delete confirmation
 ![Delete Confirmation](Images/delete%20user.png)
+
+---
 
 ### Listing all users
 ![List Users](Images/list%20user.png)
