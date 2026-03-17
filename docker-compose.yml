@@ -1,4 +1,22 @@
 services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: userdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   fastapi:
     build: .
     container_name: fastapi_app
@@ -7,6 +25,9 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: always
 
   streamlit:
@@ -20,3 +41,18 @@ services:
     depends_on:
       - fastapi
     restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: always
+
+volumes:
+  postgres_data:

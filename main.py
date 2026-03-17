@@ -6,8 +6,7 @@ from agent import chat
 
 # Initialize FastAPI application
 app = FastAPI(
-    title="AI User Management System",
-    version="1.0.0",
+    title="AI User Management System"
 )
 
 

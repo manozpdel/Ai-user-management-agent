@@ -8,7 +8,8 @@ An AI-powered user management system built with LangGraph, FastAPI, PostgreSQL, 
 
 - **LangGraph** — AI agent framework with custom graph nodes and edges
 - **FastAPI** — REST API backend
-- **PostgreSQL** — Database (hosted on Supabase)
+- **PostgreSQL** — Database (hosted on Docker)
+- **pgAdmin** — Database GUI for viewing and managing data
 - **Streamlit** — Chat UI
 - **Groq** — LLM provider (llama-3.3-70b-versatile)
 - **Docker** — Containerization
@@ -23,11 +24,11 @@ An AI-powered user management system built with LangGraph, FastAPI, PostgreSQL, 
 - Conversation memory saved to PostgreSQL — chat history persists across restarts
 - Previous conversations listed in the sidebar and can be reloaded
 - Full chat history saved per session
+- PostgreSQL runs inside Docker — no external database service required
 
 ---
 
 ## Project Structure
-
 ```
 ├── main.py          # FastAPI app with /chat endpoint
 ├── agent.py         # LangGraph graph with nodes, edges, and memory
@@ -45,7 +46,6 @@ An AI-powered user management system built with LangGraph, FastAPI, PostgreSQL, 
 ## Setup Instructions
 
 ### 1. Clone the repository
-
 ```bash
 git clone https://github.com/manozpdel/Ai-user-management-agent.git
 cd Ai-user-management-agent
@@ -54,26 +54,38 @@ cd Ai-user-management-agent
 ### 2. Set up environment variables
 
 Create a `.env` file in the root directory:
-
 ```env
-DATABASE_URL=postgresql://your-user:your-password@your-host:5432/postgres
+DATABASE_URL=postgresql://postgres:password@postgres:5432/userdb
 GROQ_API_KEY=your_groq_api_key
 ```
 
-- Get a free PostgreSQL database at [neon.tech](https://neon.tech) or [supabase.com](https://supabase.com)
 - Get a free Groq API key at [console.groq.com](https://console.groq.com)
+- No external database needed — PostgreSQL runs inside Docker
 
 ### 3. Run with Docker
-
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 - Streamlit UI: [http://localhost:8501](http://localhost:8501)
 - FastAPI docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- pgAdmin: [http://localhost:5050](http://localhost:5050)
 
-### 4. Run without Docker (local development)
+### 4. Viewing the database with pgAdmin
 
+1. Open [http://localhost:5050](http://localhost:5050)
+2. Login with `admin@admin.com` / `admin`
+3. Right-click **Servers → Register → Server**
+4. **General tab** — Name: `Docker Postgres`
+5. **Connection tab**:
+   - Host: `postgres`
+   - Port: `5432`
+   - Database: `userdb`
+   - Username: `postgres`
+   - Password: `password`
+6. Click **Save**
+
+### 5. Run without Docker (local development)
 ```bash
 pip install -r requirements.txt
 
@@ -83,6 +95,8 @@ uvicorn main:app --reload
 # Terminal 2 — start Streamlit
 streamlit run app.py
 ```
+
+> For local development, update `DATABASE_URL` in `.env` to point to your local PostgreSQL instance.
 
 ---
 
